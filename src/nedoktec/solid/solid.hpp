@@ -1,0 +1,6 @@
+#ifndef SOLID_SOLID_HPP
+#define SOLID_SOLID_HPP
+
+#define SOLID_VERSION 0.0.0
+
+#endif // SOLID_SOLID_HPP
