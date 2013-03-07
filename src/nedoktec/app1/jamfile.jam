@@ -1,0 +1,3 @@
+exe app1 : main.cpp ../solid
+         : threading<multi>
+         ;
