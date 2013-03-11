@@ -1,0 +1,4 @@
+exe app1
+    : [ glob-tree *.cpp ]
+      ../solid
+    ;
