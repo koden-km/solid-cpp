@@ -1,0 +1,6 @@
+lib solid
+    : [ glob-tree *.cpp ]
+    :
+    :
+    : <include>src/
+    ;

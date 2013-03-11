@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ "`uname`" == "Darwin" ]; then
+    bjam darwin "$@"
+else
+    bjam gcc "$@"
+fi
