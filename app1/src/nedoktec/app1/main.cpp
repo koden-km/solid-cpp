@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../solid/solid.hpp"
+#include <nedoktec/solid/solid.hpp>
 
 int main(int argc, const char* argv[])
 {
