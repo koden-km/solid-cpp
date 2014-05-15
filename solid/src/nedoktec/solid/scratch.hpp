@@ -251,13 +251,23 @@ private:
 // TODO: this probably isnt needed. i think you could do the same thing with something like this:
 // a pointer to an array of 8 shared_ptr<voxel>'s. i dont remember how to write it in C++.
 //     std::shared_ptr<Voxel>*[8] m_children;
-class VoxelBranch
-{
-public:
-protected:
-private:
-	std::shared_ptr<Voxel>[8] m_children;
-};
+// struct VoxelBranch
+// {
+// public:
+// 	union {
+// 		std::array<Voxel*, 8> m_children;
+// 		struct {
+// 			Voxel* m_child_upper_north_west;
+// 			Voxel* m_child_upper_north_east;
+// 			Voxel* m_child_upper_south_west;
+// 			Voxel* m_child_upper_south_east;
+// 			Voxel* m_child_lower_north_west;
+// 			Voxel* m_child_lower_north_east;
+// 			Voxel* m_child_lower_south_west;
+// 			Voxel* m_child_lower_south_east;
+// 		};
+// 	}
+// };
 
 
 // a voxel should subdivide a chunk into an octree down to a miniumum size.
@@ -272,29 +282,22 @@ class Voxel
 public:
 	bool IsLeaf() const
 	{
-		/* return m_children[0] == nullptr */ 
-		/* 	&& m_children[1] == nullptr */
-		/* 	&& m_children[2] == nullptr */
-		/* 	&& m_children[3] == nullptr */
-		/* 	&& m_children[4] == nullptr */
-		/* 	&& m_children[5] == nullptr */
-		/* 	&& m_children[6] == nullptr */
-		/* 	&& m_children[7] == nullptr; */
-
-		// memory reduction idea.
-		return m_children_branch == nullptr;
+		// If a child node is not set then this is a leaf node.
+		return m_child_upper_north_west == nullptr;
 	}
 
 	/* RayResult Trace(from, to, current_depth, max_depth, current_radius) */
 	/* void SetAt(const Vector3& pos, UInt32 current_depth, UInt32 max_depth, bool subdivide_if_needed, Color color, UInt16 material_index, UInt16 attributes); */
-	/* std::shared_ptr<Voxel> GetVoxelAt(const Vector3& pos, UInt32 current_depth, UInt32 max_depth); */
+	/* Voxel& GetVoxelAt(const Vector3& pos, UInt32 current_depth, UInt32 max_depth);    // return the child at the position, or 'this' if there are no children. */
 
 protected:
+
 private:
 	void UpdateColor(int max_depth)
 	{
 		if (max_depth > 0)
 		{
+			// probably do this unrolled to save all the small looping.
 			// foreach child in m_children
 			//     child.UpdateColor(max_depth - 1);
 		}
@@ -303,8 +306,19 @@ private:
 	}
 
 	std::weak_ptr<Voxel> m_parent;
-	/* std::shared_ptr<Voxel>[8] m_children; */
-	std::shared_ptr<VoxelBranch> m_children_branch;    // memory reduction idea.
+	union {
+		std::array<Voxel*, 8> m_children;
+		struct {
+			Voxel* m_child_upper_north_west;
+			Voxel* m_child_upper_north_east;
+			Voxel* m_child_upper_south_west;
+			Voxel* m_child_upper_south_east;
+			Voxel* m_child_lower_north_west;
+			Voxel* m_child_lower_north_east;
+			Voxel* m_child_lower_south_west;
+			Voxel* m_child_lower_south_east;
+		};
+	}
 	Color m_color;
 	UInt16 m_material_index;    // good for 65k materials
 	UInt16 m_attributes;        // a bit field of many options. eg. Normal index needs at least 5 bits to cover the minimum of ~24 values, (3 side types [faces/edges/corners] * 8 directions of each for a cube). (is there a std::bitfield?)
